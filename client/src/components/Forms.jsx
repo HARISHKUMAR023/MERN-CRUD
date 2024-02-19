@@ -1,6 +1,6 @@
 import axios from "axios";
 import {  useState } from "react"
-
+// import {Displayuser} from '../Pages/Displayuser';
 
 const Forms = () => {
     const [ formdata , setformdata]= useState({
@@ -30,7 +30,7 @@ const handlesumit = async (e)=>{
             'name':'',
             'email':''
         });
-
+    //   Displayuser()
     } catch(error){
         console.log(error)
     }

@@ -1,104 +1,47 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
-const app = express();
+require('dotenv').config();
 const cors = require('cors')
-
+const userRoutes = require('./routes/user.routes');
+const connectDB =require('./database/database')
+const http=require('http')
+//socket io inisiliztion
+const socketIo = require('socket.io');
+const initializeSocket = require('./socket');
+const app = express();
 const corsOptions = {
     origin: 'http://localhost:5173',
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     credentials: true, // Allow cookies, if your API uses cookies
-    optionsSuccessStatus: 204, // Some legacy browsers choke on a 204
+    optionsSuccessStatus: 204 , // Some legacy browsers choke on a 204
+    optionsSuccessStatus: 200 ,
   };
 
 
-// Enable CORS for the specific origin
-app.use(cors(corsOptions));
-// parse application/x-www-form-urlencoded
-app.use(bodyParser.urlencoded({ extended: false }));
-require('dotenv').config();
+  app.use(cors(corsOptions));
+  app.use(bodyParser.urlencoded({ extended: false }));
+  app.use(bodyParser.json());
 
-// parse application/json
-app.use(bodyParser.json());
+  const server = http.createServer(app);
+ 
 
-const mongodburl = process.env.MONGO_URL;
+  connectDB()
+  .then(() => {
+      const io = initializeSocket(server);
 
-const userSchema = new mongoose.Schema({
-    name: String,
-    email: String,
-});
+      // Use userRoutes for all user-related routes
+      app.use('/', userRoutes);
 
-const userModel = mongoose.model('User', userSchema);
+      app.get('/', (req, res) => {
+          res.json("Server is running");
+      });
 
-app.post('/post', async (req, res) => {
-    try {
-        const newUser = new userModel(req.body);
-        const savedUser = await newUser.save();
-        res.status(201).json(savedUser);
-    } catch (error) {
-        console.error('Error saving user:', error);
-        res.status(500).json({ error: "Issue in saving the user" }); // Fix: Use 500 for internal server error
-    }
-});
-
-
-app.get('/getdata',async (req,res)=>{
-    try{
-        const user = await userModel.find()
-        
-        res.status(201).json(user)
-    }catch(error){
-        console.log("error in geting the data ",error)
-        res.status(404).json({error:"some error is append"})
-    }
-})
-
-
-app.delete('/del/:userid', async (req,res)=>{
-
-    const userid = req.params.userid
-    try{
-        const userdel = await userModel.findByIdAndDelete(userid);
-        if(!userdel){
-            res.status(404).json("user not found ")
-        }
-        res.status(201).json("userid",userid ,"is delate")
-    }catch(error){
-        console.log(error)
-        res.status(404).json('is some error happend')
-    }
-})
-
-app.put('/up/:userid', async (req,res)=>{
-    const  useridup= req.params.userid;
-    const {name,email} = req.body;
-    try {
-        const updateuser = await userModel.findByIdAndUpdate(useridup,{name,email}, {new:true})
-
-        if(!updateuser){
-            res.status(404).json({'message':'it no user was not found'})
-        }
-        res.status(201).json(updateuser);
-    }catch(error){
-      console.log(error)
-      res.status(404).json({'error':'it some issue checkit '})
-    }
-
-
-})
-
-
-app.get('/', (req, res) => {
-    res.json("Server is running");
-});
-
-mongoose.connect(mongodburl)
-    .then(() => {
-        console.log("MongoDB connected");
-        app.listen(3000, () => {
-            console.log("Server is running on port 3000");
-        });
-    })
-    .catch((error) => {
-        console.log('Error connecting to MongoDB', error);
-    });
+      const PORT = 3000;
+      server.listen(PORT, () => {
+          console.log(`Server is running on port ${PORT}`);
+      });
+  })
+  .catch((error) => {
+      console.log('Error starting the server:', error);
+  });
