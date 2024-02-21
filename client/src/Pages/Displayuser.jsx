@@ -22,13 +22,22 @@ const Displayuser = () => {
           setData((prevData) => [...prevData, newData]);
       });
 
+
+     
       return () => {
           // Cleanup on component unmount
           socket.disconnect();
       };
       }, [socket]);
 
-
+ const handledelete = async (id)=>{
+        try{
+          await axios.delete(`http://localhost:3000/del/${id}`)
+        }catch(error){
+          console.log(error)
+          alert(error)
+        }
+      }
 
   return (
     <div>
@@ -52,7 +61,7 @@ const Displayuser = () => {
                   <tr  key={item._id}>
                     <th>{item.name}</th>
                     <th>{item.email}</th>
-                    <th> <a href="#" className='bg-pink-500 font-semibold p-2 text-white rounded '>Delete</a></th>
+                    <th> <a href="#" className='bg-pink-500 font-semibold p-2 text-white rounded ' onClick={()=>handledelete(item._id)} >Delete</a></th>
              
              
                   </tr>

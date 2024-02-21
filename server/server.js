@@ -14,9 +14,10 @@ const corsOptions = {
     origin: 'http://localhost:5173',
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     credentials: true, // Allow cookies, if your API uses cookies
-    optionsSuccessStatus: 204 , // Some legacy browsers choke on a 204
-    optionsSuccessStatus: 200 ,
-  };
+    allowedHeaders: 'Content-Type,Authorization', // Add the headers your frontend is sending
+    optionsSuccessStatus: 200, // Some legacy browsers choke on a 204
+};
+
 
 
   app.use(cors(corsOptions));
