@@ -1,6 +1,7 @@
 import axios from "axios";
 import {  useState } from "react"
-// import {Displayuser} from '../Pages/Displayuser';
+// eslint-disable-next-line no-unused-vars
+ import  refreshDataFromOtherFile from '../Pages/Displayuser';
 
 const Forms = () => {
     const [ formdata , setformdata]= useState({
@@ -25,7 +26,7 @@ const handlesumit = async (e)=>{
         const response = await axios.post('http://localhost:3000/post', formdata)
         console.log(response.data)
         alert("data submited")
-
+        refreshDataFromOtherFile();
         setformdata({
             'name':'',
             'email':''
@@ -37,18 +38,24 @@ const handlesumit = async (e)=>{
 }
 
   return (
-    <div className="mt-3 ">
-<form onSubmit={handlesumit}>
-    <label htmlFor="name" className="m-4">
+    <div className="mt-24 flex justify-center  ">
+<form onSubmit={handlesumit} className="backdrop-blur-sm  bg-white/30 justify-center p-8 " >
+    <label htmlFor="name" className="m-4 font-semibold text-right text-slate-800 ">
         Enter the Name:
-        <input type="text" id="name" name="name" value={formdata.name} onChange={handleinputchange} />
+        
     </label>
     <br />
-    <label htmlFor="email" className="m-4">
+    <input className="ml-6 m-3 p-2 rounded bg-transparent border border-black text-sm shadow-sm focus:border-sky-500 focus:ring-1 focus:ring-sky-500" type="text" id="name" name="name" value={formdata.name} onChange={handleinputchange} />
+    <br />
+    <label htmlFor="email" className="m-4 font-semibold text-start text-slate-800">
         Enter the Email:
-        <input type="text" className="m-3" id="email" name="email" value={formdata.email} onChange={handleinputchange} />
+       
     </label>
-    <button className="bg-red-500 text-white" type="submit">Submit</button>
+    <br />
+    <input type="text" className="ml-6 m-3 p-2 rounded bg-transparent border border-black text-sm shadow-sm focus:border-sky-500 focus:ring-1 focus:ring-sky-500" id="email" name="email" value={formdata.email} onChange={handleinputchange} />
+
+    <br />
+    <button className="bg-black text-white p-2  rounded" type="submit">Submit</button>
 </form>
 
 
